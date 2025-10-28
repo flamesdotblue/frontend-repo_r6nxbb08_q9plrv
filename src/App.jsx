@@ -1,28 +1,34 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
+import Header from './components/Header';
+import Home from './components/Home';
+import Connect from './components/Connect';
+import Footer from './components/Footer';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [route, setRoute] = useState(window.location.hash || '#/');
+
+  const navigate = (hash) => {
+    window.location.hash = hash;
+    setRoute(hash);
+  };
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash || '#/');
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
+    <div className="min-h-screen flex flex-col bg-white text-slate-900">
+      <Header currentRoute={route} navigate={navigate} />
+      <div className="flex-1">
+        {route.startsWith('#/connect') ? (
+          <Connect />
+        ) : (
+          <Home navigate={navigate} />
+        )}
       </div>
+      <Footer />
     </div>
-  )
+  );
 }
-
-export default App
